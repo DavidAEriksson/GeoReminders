@@ -33,9 +33,11 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import davidaeriksson.github.io.georeminders.R;
+import davidaeriksson.github.io.georeminders.database.DatabaseHelper;
 import davidaeriksson.github.io.georeminders.misc.Constants;
 
 /**
@@ -45,6 +47,7 @@ import davidaeriksson.github.io.georeminders.misc.Constants;
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
+    private DatabaseHelper databaseHelper;
 
     Context mapContext;
 
@@ -54,6 +57,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
     private Location location;
+
+    private ArrayList activityList;
+
 
     public MapFragment() {
         // Required empty public constructor
@@ -71,6 +77,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // Inflate the layout for this fragment
         View mapFragment = inflater.inflate(R.layout.fragment_map, container, false);
         mapContext = mapFragment.getContext();
+        databaseHelper = DatabaseHelper.getInstance(mapContext);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mapContext);
 
@@ -78,6 +85,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         mapView.getMapAsync(this);
+
+
+        activityList = new ArrayList();
+        for (int i = 0; i < databaseHelper.getRowCount(); i++) {
+            activityList.add(databaseHelper.getActivityDataInArrayList(i));
+        }
+        for (int i = 0; i < activityList.size(); i++) {
+            Log.d(Constants.MapTag, "ACTIVITIES IN LIST: " + activityList.get(i));
+        }
+
+
+
+
 
         return mapFragment;
     }
@@ -115,10 +135,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
         });
-
         googleMap.setMyLocationEnabled(true);
-
-
     }
 
 

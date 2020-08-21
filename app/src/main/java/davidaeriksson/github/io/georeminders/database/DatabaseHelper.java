@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -32,6 +33,13 @@ public class DatabaseHelper {
         return instance;
     }
 
+    public long getRowCount() {
+        SQLiteDatabase sqLiteDatabase = databaseOpenHelper.getReadableDatabase();
+        long count = DatabaseUtils.queryNumEntries(sqLiteDatabase, DatabaseConstants.DB_TABLE_ACTIVITY);
+        sqLiteDatabase.close();
+        return count;
+    }
+
     public long insertActivityToDb(Activity activity) {
         long rowId = -1;
 
@@ -54,11 +62,6 @@ public class DatabaseHelper {
             sqLiteDatabase.setTransactionSuccessful();
             sqLiteDatabase.endTransaction();
 
-
-
-
-            //context.getContentResolver().registerContentObserver(
-              //                    DBContentProvider.getUri(DatabaseConstants.DB_PATH), true, mDBObserver);
             // Notify change to table so that our adapter can update contents in recycle view.
             context.getContentResolver().notifyChange(DatabaseConstants.DB_TABLE_ACTIVITY_URI, null);
         }
@@ -78,6 +81,28 @@ public class DatabaseHelper {
             e.printStackTrace();
         }
         return cursor;
+    }
+
+    public ArrayList getActivityDataInArrayList(int index) {
+        ArrayList list = new ArrayList();
+        Cursor cursor = null;
+        SQLiteDatabase sqLiteDatabase = databaseOpenHelper.getReadableDatabase();
+        sqLiteDatabase.beginTransaction();
+        try {
+            String query = "SELECT * FROM " + DatabaseConstants.DB_TABLE_ACTIVITY;
+            cursor = sqLiteDatabase.rawQuery(query,null);
+            if (cursor != null) cursor.moveToPosition(index);
+            list.add(cursor.getString(1));
+            list.add(cursor.getString(2));
+            list.add(cursor.getFloat(3));
+            list.add(cursor.getFloat(4));
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        sqLiteDatabase.setTransactionSuccessful();
+        sqLiteDatabase.endTransaction();
+        return list;
     }
 
 
