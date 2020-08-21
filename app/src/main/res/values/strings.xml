@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">GeoReminders</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_activities_found">No activities found!</string>
+    <string name="label">Activity name</string>
+    <string name="add_new_activity">Add new activity</string>
+    <string name="add_activity">Add activity</string>
+    <string name="toast_make_null_error">Please enter a name for the activity</string>
+    <string name="add_new_failed">Error when creating activity, try again!</string>
+    <string name="update_activity_button_text">UPDATE</string>
+    <string name="update_activity_header">Update activity</string>
+</resources>
