@@ -1,12 +1,10 @@
 package davidaeriksson.github.io.georeminders.activity;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Toast;
-
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,8 +12,12 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import davidaeriksson.github.io.georeminders.R;
 import davidaeriksson.github.io.georeminders.database.DatabaseHelper;
-import davidaeriksson.github.io.georeminders.model.Activity;
 
+/**
+ * @author David Eriksson
+ * UpdateActivity.java
+ * Handles updating database entries and update_activity.xml
+ */
 public class UpdateActivity extends AppCompatActivity {
 
     public static final String ACTIVITY_ID = "activity_id";
@@ -26,6 +28,10 @@ public class UpdateActivity extends AppCompatActivity {
 
     private int activityId;
 
+    /**
+     * Method: onCreate
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +45,11 @@ public class UpdateActivity extends AppCompatActivity {
         handleOnClickUpdateButton();
     }
 
+    /**
+     * Method: handleOnClickUpdateButton
+     * Fetches user made input from view and updates the selected database entry to fetched
+     * information.
+     */
     public void handleOnClickUpdateButton() {
         commitUpdateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,6 +68,8 @@ public class UpdateActivity extends AppCompatActivity {
 
                 String activityDate = sb.toString();
 
+                // Checks if the user has given the activity a name before adding it to the database.
+                // If empty, send user toast.
                 if (!activityName.isEmpty()) {
                     try {
                         DatabaseHelper.getInstance(UpdateActivity.this).updateActivityData(activityId, activityName, activityDate);

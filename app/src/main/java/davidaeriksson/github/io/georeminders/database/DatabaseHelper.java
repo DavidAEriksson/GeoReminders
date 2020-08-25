@@ -14,6 +14,11 @@ import java.util.ArrayList;
 import davidaeriksson.github.io.georeminders.misc.Constants;
 import davidaeriksson.github.io.georeminders.model.Activity;
 
+/**
+ * @author David Eriksson
+ * DatabaseHelper
+ * Responsible for all database operations.
+ */
 public class DatabaseHelper {
 
     private static final int SQLITEDB_VERSION = 1;
@@ -21,10 +26,19 @@ public class DatabaseHelper {
     private static DatabaseOpenHelper databaseOpenHelper;
     private final Context context;
 
+    /**
+     * Constructor: DatabaseHelper
+     * @param context
+     */
     private DatabaseHelper(Context context) {
         this.context = context.getApplicationContext();
     }
 
+    /**
+     * Method: getInstance
+     * @param context
+     * @return instance - Instance of this context.
+     */
     public static synchronized DatabaseHelper getInstance(Context context) {
         if (instance == null) {
             instance = new DatabaseHelper(context);
@@ -33,6 +47,10 @@ public class DatabaseHelper {
         return instance;
     }
 
+    /**
+     * Method: getRowCount
+     * @return count - Total amount of rows in table DB_TABLE_ACTIVITY(activity_table)
+     */
     public long getRowCount() {
         SQLiteDatabase sqLiteDatabase = databaseOpenHelper.getReadableDatabase();
         long count = DatabaseUtils.queryNumEntries(sqLiteDatabase, DatabaseConstants.DB_TABLE_ACTIVITY);
@@ -40,6 +58,11 @@ public class DatabaseHelper {
         return count;
     }
 
+    /**
+     * Method: insertActivityToDb
+     * @param activity
+     * @return rowId
+     */
     public long insertActivityToDb(Activity activity) {
         long rowId = -1;
 
@@ -69,6 +92,10 @@ public class DatabaseHelper {
         return rowId;
     }
 
+    /**
+     * getAllDataFromActivityTable
+     * @return cursor - Contains all data in the table DB_TABLE_ACTIVITY(activity_table)
+     */
     public Cursor getAllDataFromActivityTable() {
         Cursor cursor = null;
         SQLiteDatabase sqLiteDatabase = databaseOpenHelper.getReadableDatabase();
@@ -83,6 +110,11 @@ public class DatabaseHelper {
         return cursor;
     }
 
+    /**
+     * Method: getActivityDataInArrayList
+     * @param index
+     * @return list - Data from DB_TABLE_ACTIVITY(activity_table) as an ArrayList object.
+     */
     public ArrayList getActivityDataInArrayList(int index) {
         ArrayList list = new ArrayList();
         Cursor cursor = null;
@@ -105,7 +137,10 @@ public class DatabaseHelper {
         return list;
     }
 
-
+    /**
+     * Method: deleteActivityFromTable
+     * @param activityId - Item to be deleted.
+     */
     @SuppressLint("Recycle")
     public void deleteActivityFromTable(int activityId) {
         Cursor cursor = null;
@@ -126,6 +161,12 @@ public class DatabaseHelper {
         context.getContentResolver().notifyChange(DatabaseConstants.DB_TABLE_ACTIVITY_URI, null);
     }
 
+    /**
+     * Method: updateActivityData
+     * @param activityId - Item to be updated
+     * @param activityName - Updated name
+     * @param activityDate - Updated date.
+     */
     @SuppressLint("Recycle")
     public void updateActivityData(int activityId, String activityName, String activityDate) {
         Cursor cursor = null;

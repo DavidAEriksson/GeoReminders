@@ -4,9 +4,11 @@ import android.net.Uri;
 
 import davidaeriksson.github.io.georeminders.misc.Constants;
 
+/**
+ * @author David Eriksson
+ * DatabaseConstants.java
+ */
 public class DatabaseConstants {
-    public static final String TAG = "DataBaseOpenHelper";
-    public static final String DB_PATH = "/data/data/" + Constants.ApplicationPackage + "/databases/";
     public static final String DB_NAME = "activity_database";
     public static final String DB_TABLE_ACTIVITY = "activity_table";
     public static final Uri DB_TABLE_ACTIVITY_URI = Uri

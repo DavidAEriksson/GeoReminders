@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,9 +42,9 @@ import davidaeriksson.github.io.georeminders.database.DatabaseHelper;
 import davidaeriksson.github.io.georeminders.misc.Constants;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link MapFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * @author David Eriksson
+ * MapFragment.java
+ * Handles the "Map" tab which displays the users position and all of the saved activities.
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
@@ -56,21 +57,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
-    private Location location;
 
-    private ArrayList activityList;
+    private ArrayList<ArrayList> activityList;
 
-
+    /**
+     * Constructor: MapFragment
+     */
     public MapFragment() {
         // Required empty public constructor
     }
 
-    public static MapFragment newInstance() {
-        MapFragment fragment = new MapFragment();
-        return fragment;
-    }
 
-
+    /**
+     * Method: onCreateView
+     * Creates the View mapFragment.
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return mapFragment - this View.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -86,41 +91,33 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mapView.onResume();
         mapView.getMapAsync(this);
 
-
         activityList = new ArrayList();
+        // Populate activity list from database when view is created.
         for (int i = 0; i < databaseHelper.getRowCount(); i++) {
             activityList.add(databaseHelper.getActivityDataInArrayList(i));
         }
-        for (int i = 0; i < activityList.size(); i++) {
-            Log.d(Constants.MapTag, "ACTIVITIES IN LIST: " + activityList.get(i));
-        }
-
-
-
-
-
         return mapFragment;
     }
 
+    /**
+     * Method: onMapReady
+     * Callback for onMapReadyCallback which this fragment implements.
+     * @param gm
+     */
     @Override
     public void onMapReady(GoogleMap gm) {
         googleMap = gm;
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        // Set the map style as defined in style_json.json.
         googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(mapContext, R.raw.style_json));
 
         locationRequest = new LocationRequest();
-        locationRequest.setInterval(10000); //FIXME; Ten second interval between requests, only for testing, should be decreased when deployed.
-        locationRequest.setFastestInterval(10000); //FIXME; Ten second interval between requests, only for testing, should be decreased when deployed.
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        locationRequest.setInterval(120000); // Standard location request timer set to 2 minutes.
+        locationRequest.setFastestInterval(2000); // Set request timer to 2 seconds if we can get request earlier.
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
+        // Check if application has ACCESS_FINE_LOCATION permission
         if (ActivityCompat.checkSelfPermission(mapContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mapContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
@@ -135,24 +132,46 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
         });
+
+        //Place a marker on the map for each activity in the list
+        for (int i = 0; i < activityList.size(); i++) {
+            String activityName = (String) activityList.get(i).get(0);
+            String activityDate = (String) activityList.get(i).get(1);
+            float latFromDb = (float) activityList.get(i).get(2);
+            float longFromDb = (float) activityList.get(i).get(3);
+
+            double activityLat = latFromDb;
+            double activityLong = longFromDb;
+
+            LatLng activityLatLng = new LatLng(activityLat,activityLong);
+
+            googleMap.addMarker((new MarkerOptions().position(activityLatLng).title(activityName).snippet(activityDate)));
+        }
         googleMap.setMyLocationEnabled(true);
     }
 
-
+    // Required callback object for fusedLocationProviderClient
     LocationCallback locationCallback = new LocationCallback() {
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
 
-        }
     };
 
 
+    /**
+     * Method: onResume()
+     * Overrides onResume for MapView object.
+     */
     @Override
     public void onResume() {
         super.onResume();
         mapView.onResume();
     }
 
+    /**
+     * Method: onPause
+     * - If application is broken by user when activity this stops the fusedLocationProviderClient
+     *   from calling locationCallback as it wont be needed at this time.
+     * - Overrides onPause for MapView object.
+     */
     @Override
     public void onPause() {
         super.onPause();
@@ -162,12 +181,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mapView.onPause();
     }
 
+    /**
+     * Method: onDestroy
+     * Overrides onDestroy for MapView object.
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
     }
 
+    /**
+     * Method: onLowMemory
+     * Overrides onLowMemory for MapView object.
+     */
     @Override
     public void onLowMemory() {
         super.onLowMemory();

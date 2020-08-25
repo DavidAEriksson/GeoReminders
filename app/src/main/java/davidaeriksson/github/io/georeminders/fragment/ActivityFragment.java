@@ -32,9 +32,14 @@ import davidaeriksson.github.io.georeminders.database.DatabaseConstants;
 import davidaeriksson.github.io.georeminders.database.DatabaseHelper;
 import davidaeriksson.github.io.georeminders.database.SQLiteCursorLoader;
 
+/**
+ * @author David Eriksson
+ * ActivityFragment.java
+ * Handles fragment_activity.xml and its components.
+ */
 public class ActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, UpdateActivityListener, DeleteActivityListener {
 
-    private static final String TAG = "ActivityFragment";
+
     private static final int GET_ACTIVITY_QUERY_LOADER = 0;
     Context activityContext;
 
@@ -44,15 +49,21 @@ public class ActivityFragment extends Fragment implements LoaderManager.LoaderCa
     private LinearLayoutManager linearLayoutManager;
     private TextView activityListEmpty;
 
+    /**
+     * Constructor: ActivityFragment
+     */
     public ActivityFragment() {
         // Required empty public constructor
     }
 
-    public static ActivityFragment newInstance() {
-        ActivityFragment fragment = new ActivityFragment();
-        return fragment;
-    }
-
+    /**
+     * Method: onCreateView
+     * Creates the View activityFragment.
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return activityFragment - this View.
+     */
     @SuppressLint("MissingPermission")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,11 +79,17 @@ public class ActivityFragment extends Fragment implements LoaderManager.LoaderCa
 
 
         handleOnClickFab();
+        // Initiates loader on this instance.
         LoaderManager.getInstance(this).initLoader(GET_ACTIVITY_QUERY_LOADER,null,this);
 
         return activityFragment;
     }
 
+    /**
+     * Method: setupAdapter
+     * Sets up the RecyclerView.Adapter on given cursor.
+     * @param cursor
+     */
     public void setupAdapter(Cursor cursor) {
         activityListAdapter = new ActivityListAdapter(cursor);
         activityListAdapter.deleteActivityListener = (DeleteActivityListener) this;
@@ -80,29 +97,47 @@ public class ActivityFragment extends Fragment implements LoaderManager.LoaderCa
         recyclerView.setAdapter(activityListAdapter);
     }
 
+    /**
+     * Method: handleOnClickFab
+     * Starts activity AddActivity.java when Floating Action Button is clicked.
+     */
     private void handleOnClickFab() {
         addActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent addNewActivityIntent = new Intent(activityContext, AddActivity.class);
                 startActivity(addNewActivityIntent);
-                Log.d(TAG, "FAB Clicked, starting Intent: " + addNewActivityIntent);
             }
         });
     }
 
+    /**
+     * Method: onResume
+     * Overrides onResume and initiates loader on this instance.
+     */
     @Override
     public void onResume() {
         super.onResume();
         LoaderManager.getInstance(this).initLoader(GET_ACTIVITY_QUERY_LOADER,null,this);
     }
 
+    /**
+     * Method: onDestroy
+     * Overrides onResume and initiates loader on this instance.
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
         LoaderManager.getInstance(this).initLoader(GET_ACTIVITY_QUERY_LOADER,null,this);
     }
 
+    /**
+     * Method: onCreateLoader
+     * Creates new loader object Loader<Cursor>
+     * @param id
+     * @param args
+     * @return
+     */
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
@@ -119,6 +154,12 @@ public class ActivityFragment extends Fragment implements LoaderManager.LoaderCa
         };
     }
 
+    /**
+     * Method: onLoadFinished
+     * Called when loader has finished loading data from cursor.
+     * @param loader
+     * @param data
+     */
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         if(data != null && data.getCount() > 0) {
@@ -127,16 +168,31 @@ public class ActivityFragment extends Fragment implements LoaderManager.LoaderCa
         setupAdapter(data);
     }
 
+    /**
+     * Method: onLoaderReset
+     * Called when loader is being reset. This is just a required method for fragments that
+     * implement LoaderManger.LoaderCallbacks<Cursor>
+     * @param loader
+     */
     @Override
-    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {}
 
-    }
-
+    /**
+     * Method: onDeleteActivityAction
+     * Calls method deleteActivityFromTable in DatabaseHelper to delete entry with id activityId.
+     * @param activityId - Entry that is being deleted
+     */
     @Override
     public void onDeleteActivityAction(int activityId) {
         DatabaseHelper.getInstance(activityContext).deleteActivityFromTable(activityId);
     }
 
+    /**
+     * Method: onUpdateActivityAction
+     * Creates and starts intent for UpdateActivity.java with a database entry that is
+     * getting updated.
+     * @param activityId - Entry that is being updated
+     */
     @Override
     public void onUpdateActivityAction(int activityId) {
         Intent updateActivityIntent = new Intent(activityContext, UpdateActivity.class);

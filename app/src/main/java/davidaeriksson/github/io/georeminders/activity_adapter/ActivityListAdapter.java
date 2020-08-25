@@ -14,23 +14,45 @@ import davidaeriksson.github.io.georeminders.database.DatabaseConstants;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+/**
+ * @author David Eriksson
+ * ActivityListAdapter
+ * Custom adapter for activity list which is used by the RecyclerView in activity_main.xml.
+ */
 public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private Cursor cursor;
 
+    // Adapter interfaces.
     public DeleteActivityListener deleteActivityListener;
     public UpdateActivityListener updateActivityListener;
 
+    /**
+     * Constructor: ActivityListAdapter
+     * @param cursor
+     */
     public ActivityListAdapter(Cursor cursor) {
         this.cursor = cursor;
     }
 
+    /**
+     * Method: getItemCount
+     * @return cursor.getCount - Count of items in cursor
+     */
     @Override
     public int getItemCount() {
         if (cursor == null || cursor.isClosed()) return 0;
         else return cursor.getCount();
     }
 
+    /**
+     * Method: onCreteViewHolder
+     * Creates new recyclerView.ViewHolder to be used by RecyclerVeew
+     * @param parent
+     * @param viewType
+     * @return - ViewHolder
+     */
+    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v;
@@ -38,6 +60,12 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return new ViewHolder(v);
     }
 
+    /**
+     * Method: onBindViewHolder
+     * Updates the RecyclerView.ViewHolder when new items are added.
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         try {
@@ -49,6 +77,11 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
 
+    /**
+     * @author David Eriksson
+     * ViewHolder
+     * Describes the ViewHolder item contents of the RecyclerView
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private final View itemView;
@@ -58,6 +91,10 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private final Button deleteActivityButton;
         private final Button updateActivityButton;
 
+        /**
+         * Constructor: ViewHolder
+         * @param itemView
+         */
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.itemView = itemView;
@@ -80,6 +117,7 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             activityNameTextView.setText(activityName);
             activityDateTextView.setText(activityDate);
 
+            // Call deleteActivityListener to delete this entry.
             deleteActivityButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -87,6 +125,7 @@ public class ActivityListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             });
 
+            // Call updateActivityListener to update this entry.
             updateActivityButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

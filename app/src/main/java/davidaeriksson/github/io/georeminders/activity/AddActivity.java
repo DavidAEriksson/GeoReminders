@@ -26,18 +26,30 @@ import davidaeriksson.github.io.georeminders.database.DatabaseHelper;
 import davidaeriksson.github.io.georeminders.misc.Constants;
 import davidaeriksson.github.io.georeminders.model.Activity;
 
+/**
+ * @author David Eriksson
+ * AddActivity.java
+ * Class responsible for handling additions to database and add_activity.xml
+ */
 public class AddActivity extends AppCompatActivity {
 
     private TextInputLayout activityField;
     private DatePicker datePicker;
     private Button addActivityButton;
 
+    // Location variables used by AddActivity.java to add a location to database entry for
+    // any given activity.
     private LocationRequest locationRequest;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Location lastLocation;
     private double activityLocationLat;
     private double activityLocationLong;
 
+    /**
+     * Method: onCreate
+     *
+     * @param savedInstanceState
+     */
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,24 +62,30 @@ public class AddActivity extends AppCompatActivity {
 
         // Set fused location provider client on this context.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        // Create a new location request on a 10-second interval.
+
         locationRequest = new LocationRequest();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(10000);
-        // Set priority to location request.
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        locationRequest.setInterval(120000); // Standard location request timer set to 2 minutes.
+        locationRequest.setFastestInterval(1000); // Set request timer to 2 seconds if we can get request earlier.
+        // Set priority to location request to high accuracy.
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         // Request location updates on the request and callback.
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
 
         handleOnClickButton();
     }
 
+    /**
+     * Method: handleOnClickButton
+     * Fetches user made input from view as well as the current location of the device and adds
+     * this to database entry.
+     */
     private void handleOnClickButton() {
         addActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String activityName = String.valueOf(activityField.getEditText().getText());
 
+                // This creates a string from the date picker object before adding it to the database.
                 StringBuilder sb = new StringBuilder();
                 int day = datePicker.getDayOfMonth();
                 int month = datePicker.getMonth() + 1;
@@ -77,11 +95,10 @@ public class AddActivity extends AppCompatActivity {
                 sb.append(month);
                 sb.append("-");
                 sb.append(year);
-
                 String activityDate = sb.toString();
 
-                Log.d(Constants.AddActivity, "Created new Activity: " + activityName + " activity date: " + activityDate + "Latitude: " + activityLocationLat + " Longitude: " + activityLocationLong);
-
+                // Checks if the user has given the activity a name before adding it to the database.
+                // If empty, send user toast.
                 if (!activityName.isEmpty()) {
                     try {
                         Activity activity = new Activity(activityName, activityDate, activityLocationLat, activityLocationLong);
@@ -112,6 +129,11 @@ public class AddActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Method: onPause
+     * If application is broken by user when activity this stops the fusedLocationProviderClient
+     * from calling locationCallback as it wont be needed at this time.
+     */
     @Override
     public void onPause() {
         super.onPause();
@@ -120,9 +142,4 @@ public class AddActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onResume(){
-        super.onResume();
-        Log.d(Constants.AddActivity,"Should log when activity is swiped to.");
-    }
 }

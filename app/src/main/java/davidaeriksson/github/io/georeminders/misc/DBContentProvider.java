@@ -8,10 +8,11 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+/**
+ * @author David Eriksson
+ * Class generated from ContentProvider
+ */
 public class DBContentProvider extends ContentProvider {
-
-    public static final String CONTENT_PROVIDER_AUTHORITY = "davidaeriksson.github.io.georeminders.DBContentProvider";
-    public static final String CONTENT_PROVEDER_SCHEME = "davidaeriksson.github.io.georeminders.DBContentProviderScheme";
 
     @Override
     public boolean onCreate() {
@@ -46,8 +47,4 @@ public class DBContentProvider extends ContentProvider {
         return 0;
     }
 
-    public static Uri getUri(String path) {
-        Uri.Builder builder = new Uri.Builder();
-        return builder.authority(CONTENT_PROVIDER_AUTHORITY).path(path).scheme(CONTENT_PROVEDER_SCHEME).build();
-    }
 }
