@@ -14,7 +14,7 @@ public class DatabaseConstants {
     public static final Uri DB_TABLE_ACTIVITY_URI = Uri
             .parse("sqlite://" + Constants.ApplicationPackage + "/" + DB_TABLE_ACTIVITY);
 
-    // User table columns
+    // Activity table columns
     public static final String COL_ID = "id";
     public static final String COL_ACTIVITY_NAME = "activity_name";
     public static final String COL_ACTIVITY_DATE = "activity_date";

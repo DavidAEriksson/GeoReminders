@@ -52,6 +52,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
     /**
      * Method: onUpgrade
+     * Empty method, required by SQLiteOpenHelper extension
      * @param sqLiteDatabase
      * @param i
      * @param i1

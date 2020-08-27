@@ -1,19 +1,10 @@
 package davidaeriksson.github.io.georeminders.database;
 
 import android.content.Context;
-import android.content.ContentResolver;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Handler;
-
 
 import androidx.loader.content.AsyncTaskLoader;
-import androidx.loader.content.Loader;
-
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.Arrays;
 
 /**
  * @author David Eriksson

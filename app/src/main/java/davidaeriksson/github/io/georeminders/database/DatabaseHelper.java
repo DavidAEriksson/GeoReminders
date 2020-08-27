@@ -66,8 +66,6 @@ public class DatabaseHelper {
     public long insertActivityToDb(Activity activity) {
         long rowId = -1;
 
-        Log.d(Constants.AddActivity, "Name: " + activity.name + " date: " + activity.date + " LAT: " + activity.latitude + " LONG: " + activity.longitude);
-
         if (activity != null) {
             SQLiteDatabase sqLiteDatabase = databaseOpenHelper.getWritableDatabase();
             sqLiteDatabase.beginTransaction();

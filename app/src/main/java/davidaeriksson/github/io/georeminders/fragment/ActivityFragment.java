@@ -41,7 +41,7 @@ public class ActivityFragment extends Fragment implements LoaderManager.LoaderCa
 
 
     private static final int GET_ACTIVITY_QUERY_LOADER = 0;
-    Context activityContext;
+    private Context activityContext;
 
     private FloatingActionButton addActivityButton;
     private RecyclerView recyclerView;
